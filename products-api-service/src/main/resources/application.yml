@@ -1,0 +1,8 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/products-api
+spring:
+  data:
+    mongodb:
+      uri: mongodb://bicycle-shop-db-user:Abc1234@localhost:27017/bicycle-shop-db
