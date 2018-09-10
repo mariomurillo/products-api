@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.core.convert.ConversionService;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +44,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/products")
 @Slf4j
 public class ProductController {
+
+	/** The Constant for value access control. */
+	private static final String VALUE_ACCESS_CONTROL = "*";
+
+	/** The Constant for header of access control allow origin. */
+	private static final String ACCESS_CONTROL_ALLOW_ORIGIN = "Access-Control-Allow-Origin";
 
 	/** The Constant for message product deleted. */
 	private static final String MESSAGE_PRODUCT_DELETED = "Product deleted";
@@ -71,13 +79,13 @@ public class ProductController {
 	public ResponseEntity<ProductResponseDto> save(@RequestBody final ProductRequestDto product) {
 		try {
 			return new ResponseEntity<>(
-					conversionService.convert(service.save(getProduct(product)), ProductResponseDto.class), OK);
+					conversionService.convert(service.save(getProduct(product)), ProductResponseDto.class), getHeaders(), OK);
 
 		} catch (final Exception e) {
 
 			log.error(e.getMessage(), e);
 
-			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(getHeaders(), INTERNAL_SERVER_ERROR);
 		}
 	}
 	
@@ -96,13 +104,13 @@ public class ProductController {
 				response.add(conversionService.convert(p, ProductResponseDto.class));
 				});
 
-			return new ResponseEntity<List<ProductResponseDto>>(response, OK);
+			return new ResponseEntity<List<ProductResponseDto>>(response, getHeaders() , OK);
 
 		} catch (final Exception e) {
 
 			log.error(e.getMessage(), e);
 
-			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(getHeaders(), INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -116,13 +124,13 @@ public class ProductController {
 	public ResponseEntity<ProductDto> findById(@PathVariable final String id) {
 		try {
 			return new ResponseEntity<ProductDto>(
-					conversionService.convert(service.findById(id), ProductDto.class), OK);
+					conversionService.convert(service.findById(id), ProductDto.class), getHeaders(), OK);
 
 		} catch (final Exception e) {
 
 			log.error(e.getMessage(), e);
 
-			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(getHeaders(), INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -138,13 +146,13 @@ public class ProductController {
 		try {
 			service.delete(service.findById(id));
 
-			return new ResponseEntity<String>(MESSAGE_PRODUCT_DELETED, OK);
+			return new ResponseEntity<String>(MESSAGE_PRODUCT_DELETED, getHeaders(), OK);
 
 		} catch (final Exception e) {
 
 			log.error(e.getMessage(), e);
 
-			return new ResponseEntity<>(INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(getHeaders(), INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -158,4 +166,16 @@ public class ProductController {
 		return conversionService.convert(product, Product.class);
 	}
 	
+	/**
+	 * Gets the headers.
+	 *
+	 * @return the headers
+	 */
+	private MultiValueMap<String, String> getHeaders() {
+
+		final MultiValueMap<String, String> headers = new HttpHeaders();
+		headers.add(ACCESS_CONTROL_ALLOW_ORIGIN, VALUE_ACCESS_CONTROL);
+
+		return headers;
+	}
 }
