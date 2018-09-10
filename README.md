@@ -11,3 +11,6 @@ Proyecto que expone una api para el manejo de productos de una tiend de biciclet
 
 **Ejecutar proyecto**
 Para poder correr el proyecto en forma local se debe tener una base de datos en mongo y una coleccion llamada bicycle-shop-db, esto es configurable en el archivo de propiedades del proyecto `products-api-service` llamado: `application.yml`
+
+**Pruebas de la api**
+Para poder realizar pruebas funcionales en ambiente local de esta api se puede utilizar la siguiente url: http://localhost:8080/api/products-api/products
